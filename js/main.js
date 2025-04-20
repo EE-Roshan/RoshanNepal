@@ -18,6 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('ScrollTrigger loaded successfully.');
     }
+    if (typeof emailjs === 'undefined') {
+        console.error('EmailJS failed to load. Check CDN or network.');
+    } else {
+        console.log('EmailJS loaded successfully.');
+    }
 
     // Initialize Particles.js if available
     if (typeof particlesJS !== 'undefined') {
@@ -178,23 +183,56 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Footer animation initialized.');
     }
 
-    // Form submission
+    // Form submission with EmailJS
     const contactForm = document.querySelector('.contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
             e.preventDefault();
-            const formData = new FormData(this);
             const submitButton = this.querySelector('button[type="submit"]');
             submitButton.disabled = true;
             submitButton.textContent = 'Sending...';
-            setTimeout(() => {
-                submitButton.textContent = 'Message Sent!';
-                this.reset();
+
+            const formData = {
+                name: this.querySelector('input[placeholder="Name"]').value,
+                email: this.querySelector('input[placeholder="Email"]').value,
+                subject: this.querySelector('input[placeholder="Subject"]').value || 'No Subject',
+                message: this.querySelector('textarea[placeholder="Message"]').value
+            };
+
+            console.log('Submitting form with data:', formData);
+            console.log('EmailJS available before send:', typeof emailjs !== 'undefined');
+
+            try {
+                if (typeof emailjs !== 'undefined') {
+                    emailjs.init({ publicKey: "WhY9_arB-lviMO6oK" }); // Re-initialize to be safe
+                    emailjs.send('service_ee5634', 'template_j4pbwrj', formData)
+                        .then((response) => {
+                            console.log('Email sent successfully:', response.status, response.text, formData);
+                            submitButton.textContent = 'Message Sent!';
+                            this.reset();
+                            setTimeout(() => {
+                                submitButton.textContent = 'Send Message';
+                                submitButton.disabled = false;
+                            }, 2000);
+                        }, (error) => {
+                            console.error('EmailJS error:', error.text, error);
+                            submitButton.textContent = 'Error Sending';
+                            setTimeout(() => {
+                                submitButton.textContent = 'Send Message';
+                                submitButton.disabled = false;
+                            }, 2000);
+                        });
+                } else {
+                    throw new Error('EmailJS SDK not available');
+                }
+            } catch (err) {
+                console.error('Form submission error:', err.message, err);
+                submitButton.textContent = 'Error: Email Service Unavailable';
                 setTimeout(() => {
                     submitButton.textContent = 'Send Message';
                     submitButton.disabled = false;
                 }, 2000);
-            }, 1500);
+            }
         });
     }
 
