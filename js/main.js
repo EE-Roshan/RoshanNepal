@@ -1,42 +1,73 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Particles.js
-    particlesJS('particles-js', {
-        particles: {
-            number: { value: 80, density: { enable: true, value_area: 800 } },
-            color: { value: "#00a8ff" },
-            shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
-            opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
-            size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
-            line_linked: { enable: true, distance: 150, color: "#00a8ff", opacity: 0.2, width: 1 },
-            move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
-        },
-        interactivity: {
-            detect_on: "canvas",
-            events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true },
-            modes: { grab: { distance: 140, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 4 }, remove: { particles_nb: 2 } }
-        },
-        retina_detect: true
-    });
+    console.log('Main.js loaded successfully at:', new Date().toISOString());
+    console.log('Document base URI:', document.baseURI);
+
+    // Check if external scripts loaded
+    if (typeof particlesJS === 'undefined') {
+        console.error('Particles.js failed to load. Check CDN or network.');
+    } else {
+        console.log('Particles.js loaded successfully.');
+    }
+    if (typeof gsap === 'undefined') {
+        console.error('GSAP failed to load. Check CDN or network.');
+    } else {
+        console.log('GSAP loaded successfully.');
+    }
+    if (typeof ScrollTrigger === 'undefined') {
+        console.error('ScrollTrigger failed to load. Check CDN or network.');
+    } else {
+        console.log('ScrollTrigger loaded successfully.');
+    }
+
+    // Initialize Particles.js if available
+    if (typeof particlesJS !== 'undefined') {
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#00a8ff" },
+                shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
+                opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+                size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+                line_linked: { enable: true, distance: 150, color: "#00a8ff", opacity: 0.2, width: 1 },
+                move: { enable: true, speed: 2, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: { onhover: { enable: true, mode: "grab" }, onclick: { enable: true, mode: "push" }, resize: true },
+                modes: { grab: { distance: 140, line_linked: { opacity: 1 } }, bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 }, repulse: { distance: 200, duration: 0.4 }, push: { particles_nb: 4 }, remove: { particles_nb: 2 } }
+            },
+            retina_detect: true
+        });
+        console.log('Particles.js initialized for hero section.');
+    }
 
     // Custom Cursor
     const cursor = document.querySelector('.cursor');
     const cursorFollower = document.querySelector('.cursor-follower');
     
     document.addEventListener('mousemove', (e) => {
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        gsap.to(cursorFollower, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power2.out" });
+        if (cursor && cursorFollower) {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            if (typeof gsap !== 'undefined') {
+                gsap.to(cursorFollower, { x: e.clientX, y: e.clientY, duration: 0.5, ease: "power2.out" });
+            }
+        }
     });
     
     const hoverElements = document.querySelectorAll('a, button, .tool-item, .project-card');
     hoverElements.forEach(el => {
         el.addEventListener('mouseenter', () => {
-            cursor.classList.add('cursor-hover');
-            cursorFollower.classList.add('cursor-follower-hover');
+            if (cursor && cursorFollower) {
+                cursor.classList.add('cursor-hover');
+                cursorFollower.classList.add('cursor-follower-hover');
+            }
         });
         el.addEventListener('mouseleave', () => {
-            cursor.classList.remove('cursor-hover');
-            cursorFollower.classList.remove('cursor-follower-hover');
+            if (cursor && cursorFollower) {
+                cursor.classList.remove('cursor-hover');
+                cursorFollower.classList.remove('cursor-follower-hover');
+            }
         });
     });
 
@@ -44,19 +75,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const socialLinks = document.querySelectorAll('.social-link');
     socialLinks.forEach(link => {
         link.addEventListener('click', (e) => {
+            e.preventDefault();
             const href = link.getAttribute('href');
             console.log(`Social link clicked: ${href}`);
-            // Allow default navigation (no e.preventDefault())
-            // Browser will handle target="_blank" and open in new tab
+            if (href) {
+                window.open(href, '_blank', 'noopener,noreferrer');
+            } else {
+                console.error('Social link href is missing or invalid:', link);
+            }
         });
     });
 
     // Navbar scroll effect
     const navbar = document.querySelector('.navbar');
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
+        if (navbar && window.scrollY > 50) {
             navbar.classList.add('scrolled');
-        } else {
+        } else if (navbar) {
             navbar.classList.remove('scrolled');
         }
     });
@@ -64,10 +99,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
-    hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active');
-        navLinks.classList.toggle('active');
-    });
+    if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    }
 
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -77,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 window.scrollTo({ top: targetElement.offsetTop - 80, behavior: 'smooth' });
-                if (navLinks.classList.contains('active')) {
+                if (navLinks && navLinks.classList.contains('active')) {
                     hamburger.classList.remove('active');
                     navLinks.classList.remove('active');
                 }
@@ -86,47 +123,60 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // GSAP Animations
-    gsap.registerPlugin(ScrollTrigger);
-    
-    const heroTitleWords = document.querySelectorAll('.title-word');
-    heroTitleWords.forEach((word, index) => {
-        gsap.from(word, { opacity: 0, y: 50, duration: 0.8, delay: index * 0.1, ease: "power3.out" });
-    });
-    
-    gsap.from('.hero-subtitle', { opacity: 0, y: 30, duration: 1, delay: 0.5, ease: "power3.out" });
-    gsap.from('.hero-buttons', { opacity: 0, y: 30, duration: 1, delay: 0.7, ease: "power3.out" });
-    
-    const sections = document.querySelectorAll('section');
-    sections.forEach(section => {
-        gsap.from(section, { scrollTrigger: { trigger: section, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 50, duration: 1, ease: "power3.out" });
-    });
-    
-    const skillBars = document.querySelectorAll('.skill-progress');
-    skillBars.forEach(bar => {
-        const width = bar.getAttribute('data-width');
-        ScrollTrigger.create({
-            trigger: bar,
-            start: "top 80%",
-            onEnter: () => { gsap.to(bar, { width: width, duration: 1.5, ease: "power3.out" }); }
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+        console.log('Initializing GSAP animations...');
+        
+        const heroTitleWords = document.querySelectorAll('.title-word');
+        heroTitleWords.forEach((word, index) => {
+            gsap.from(word, { opacity: 0, y: 50, duration: 0.8, delay: index * 0.1, ease: "power3.out" });
         });
-    });
-    
-    const projectCards = document.querySelectorAll('.project-card');
-    projectCards.forEach((card, index) => {
-        gsap.from(card, { scrollTrigger: { trigger: card, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 50, duration: 0.8, delay: index * 0.1, ease: "power3.out" });
-    });
-    
-    const timelineItems = document.querySelectorAll('.timeline-item');
-    timelineItems.forEach(item => {
-        gsap.from(item, { scrollTrigger: { trigger: item, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, x: item.classList.contains('timeline-item-even') ? 50 : -50, duration: 0.8, ease: "power3.out" });
-    });
-    
-    const formGroups = document.querySelectorAll('.form-group');
-    formGroups.forEach((group, index) => {
-        gsap.from(group, { scrollTrigger: { trigger: group, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 30, duration: 0.5, delay: index * 0.1, ease: "power3.out" });
-    });
-    
-    gsap.from('.footer', { scrollTrigger: { trigger: '.footer', start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 50, duration: 1, ease: "power3.out" });
+        console.log('Hero title animation initialized.');
+        
+        gsap.from('.hero-subtitle', { opacity: 0, y: 30, duration: 1, delay: 0.5, ease: "power3.out" });
+        console.log('Hero subtitle animation initialized.');
+        
+        gsap.from('.hero-buttons', { opacity: 0, y: 30, duration: 1, delay: 0.7, ease: "power3.out" });
+        console.log('Hero buttons animation initialized.');
+        
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+            gsap.from(section, { scrollTrigger: { trigger: section, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 50, duration: 1, ease: "power3.out" });
+        });
+        console.log('Section animations initialized.');
+        
+        const skillBars = document.querySelectorAll('.skill-progress');
+        skillBars.forEach(bar => {
+            const width = bar.getAttribute('data-width');
+            ScrollTrigger.create({
+                trigger: bar,
+                start: "top 80%",
+                onEnter: () => { gsap.to(bar, { width: width, duration: 1.5, ease: "power3.out" }); }
+            });
+        });
+        console.log('Skill bar animations initialized.');
+        
+        const projectCards = document.querySelectorAll('.project-card');
+        projectCards.forEach((card, index) => {
+            gsap.from(card, { scrollTrigger: { trigger: card, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 50, duration: 0.8, delay: index * 0.1, ease: "power3.out" });
+        });
+        console.log('Project card animations initialized.');
+        
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach(item => {
+            gsap.from(item, { scrollTrigger: { trigger: item, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, x: item.classList.contains('timeline-item-even') ? 50 : -50, duration: 0.8, ease: "power3.out" });
+        });
+        console.log('Timeline item animations initialized.');
+        
+        const formGroups = document.querySelectorAll('.form-group');
+        formGroups.forEach((group, index) => {
+            gsap.from(group, { scrollTrigger: { trigger: group, start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 30, duration: 0.5, delay: index * 0.1, ease: "power3.out" });
+        });
+        console.log('Form group animations initialized.');
+        
+        gsap.from('.footer', { scrollTrigger: { trigger: '.footer', start: "top 80%", toggleActions: "play none none none" }, opacity: 0, y: 50, duration: 1, ease: "power3.out" });
+        console.log('Footer animation initialized.');
+    }
 
     // Form submission
     const contactForm = document.querySelector('.contact-form');
@@ -160,7 +210,9 @@ document.addEventListener('DOMContentLoaded', function() {
             tooltip.style.left = `${rect.left + rect.width / 2}px`;
             tooltip.style.top = `${rect.bottom + 5}px`;
             tooltip.style.transform = 'translateX(-50%)';
-            gsap.from(tooltip, { opacity: 0, y: -10, duration: 0.3 });
+            if (typeof gsap !== 'undefined') {
+                gsap.from(tooltip, { opacity: 0, y: -10, duration: 0.3 });
+            }
             item.tooltip = tooltip;
         });
         item.addEventListener('mouseleave', () => {
@@ -177,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         let fromTop = window.scrollY + 100;
         navItems.forEach(item => {
             const section = document.querySelector(item.getAttribute('href'));
-            if (section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
+            if (section && section.offsetTop <= fromTop && section.offsetTop + section.offsetHeight > fromTop) {
                 item.classList.add('active');
             } else {
                 item.classList.remove('active');
@@ -198,12 +250,14 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         document.body.appendChild(preloader);
-        gsap.to('.preloader', {
-            opacity: 0,
-            duration: 0.5,
-            delay: 1,
-            onComplete: () => { preloader.remove(); }
-        });
+        if (typeof gsap !== 'undefined') {
+            gsap.to('.preloader', {
+                opacity: 0,
+                duration: 0.5,
+                delay: 1,
+                onComplete: () => { preloader.remove(); }
+            });
+        }
     });
 
     // CV Modal functionality
@@ -215,7 +269,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (show) {
             cvModal.classList.add('show');
             document.body.style.overflow = 'hidden';
-            gsap.from('.modal-content', { opacity: 0, y: 20, duration: 0.3 });
+            if (typeof gsap !== 'undefined') {
+                gsap.from('.modal-content', { opacity: 0, y: 20, duration: 0.3 });
+            }
         } else {
             cvModal.classList.remove('show');
             document.body.style.overflow = 'auto';
@@ -246,19 +302,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && cvModal.classList.contains('show')) {
-            toggleModal
-
-(false);
+            toggleModal(false);
         }
     });
 
     const cvButton = document.querySelector('.btn-cv');
     if (cvButton) {
         setInterval(() => {
-            gsap.to(cvButton, { scale: 1.05, duration: 0.5, yoyo: true, repeat: 1, ease: "power1.inOut" });
+            if (typeof gsap !== 'undefined') {
+                gsap.to(cvButton, { scale: 1.05, duration: 0.5, yoyo: true, repeat: 1, ease: "power1.inOut" });
+            }
         }, 8000);
         cvButton.addEventListener('click', () => {
-            gsap.to(cvButton, { scale: 0.95, duration: 0.2, yoyo: true, repeat: 1, ease: "power1.inOut" });
+            if (typeof gsap !== 'undefined') {
+                gsap.to(cvButton, { scale: 0.95, duration: 0.2, yoyo: true, repeat: 1, ease: "power1.inOut" });
+            }
             console.log('CV preview initiated');
         });
     }

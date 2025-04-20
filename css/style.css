@@ -307,12 +307,12 @@ body {
     height: 100%;
     object-fit: cover;
     border-radius: 5px;
-    filter: none; /* Removed grayscale for colorful image by default */
+    filter: none;
     transition: all 0.3s ease;
 }
 
 .image-container:hover img {
-    filter: none; /* No change on hover, remains colorful */
+    filter: none;
 }
 
 .image-border {
